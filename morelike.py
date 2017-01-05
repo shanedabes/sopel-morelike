@@ -32,7 +32,6 @@ def trans_word(curr_word):
     rwc = random.choice(rw)
     rwv = re.search(r'(.*[0-9])', rwc[1]).group()
     si = re.findall(r'\w+\d', wp).index(rwv)
-    # ws[si] = rwc[0]
     ns = rwc[0]
     if re.search(r'[aeiouy]$', ns):
         ns += re.search(r'[^aeiou]*$', ws[si]).group()
