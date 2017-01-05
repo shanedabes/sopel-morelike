@@ -18,26 +18,31 @@ h_en = hyphen.Hyphenator('en_GB')
 def trans_word(curr_word):
     if ' ' in curr_word:
         return curr_word
-    wp = pronouncing.phones_for_word(curr_word)[0]
-    if pronouncing.syllable_count(wp) == 1:
-        ws = [curr_word]
+    # strip non alphanumeric characters from word
+    curr_word = ''.join(i for i in curr_word if i.isalnum())
+    word_phone_list = pronouncing.phones_for_word(curr_word)
+    if not word_phone_list:
+        return curr_word
+    word_phones = word_phone_list[0]
+    if pronouncing.syllable_count(word_phones) == 1:
+        word_syllables = [curr_word]
     else:
-        ws = h_en.syllables(curr_word)
-        if not ws:
+        word_syllables = h_en.syllables(curr_word)
+        if not word_syllables:
             return curr_word
-    if pronouncing.syllable_count(wp) != len(ws):
+    if pronouncing.syllable_count(word_phones) != len(word_syllables):
         return curr_word
-    rw = [(i, words[i]) for i in words if words[i] in wp]
-    if not rw:
+    rep_words = [(i, words[i]) for i in words if words[i] in word_phones]
+    if not rep_words:
         return curr_word
-    rwc = random.choice(rw)
-    rwv = re.search(r'(.*[0-9])', rwc[1]).group()
-    si = re.findall(r'\w+\d', wp).index(rwv)
-    ns = rwc[0]
-    if re.search(r'[aeiouy]$', ns):
-        ns += re.search(r'[^aeiouy]*$', ws[si]).group()
-    ws[si] = ns
-    out = ''.join(ws)
+    rep_word = random.choice(rep_words)
+    rep_word_vowel = re.search(r'(.*[0-9])', rep_word[1]).group()
+    si = re.findall(r'\w+\d', word_phones).index(rep_word_vowel)
+    new_syllable = rep_word[0]
+    if re.search(r'[aeiouy]$', new_syllable):
+        new_syllable += re.search(r'[^aeiouy]*$', word_syllables[si]).group()
+    word_syllables[si] = new_syllable
+    out = ''.join(word_syllables)
 
     return out
 
