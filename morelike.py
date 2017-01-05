@@ -4,6 +4,7 @@ import pronouncing
 import hyphen
 import re
 import random
+from sopel.module import commands
 
 
 words = ['poo', 'crap', 'shit', 'gay', 'dumb', 'arse', 'fuck', 'piss', 'bum',
@@ -34,11 +35,18 @@ def trans_word(curr_word):
     si = re.findall(r'\w+\d', wp).index(rwv)
     ns = rwc[0]
     if re.search(r'[aeiouy]$', ns):
-        ns += re.search(r'[^aeiou]*$', ws[si]).group()
+        ns += re.search(r'[^aeiouy]*$', ws[si]).group()
     ws[si] = ns
     out = ''.join(ws)
 
     return out
+
+
+@commands('morelike')
+def morelike(bot, trigger):
+    line = trigger.group(2).strip()
+    new_line = ' '.join(trans_word(i) for i in line.split())
+    bot.say('{}? More like {}'.format(line, new_line))
 
 
 if __name__ == '__main__':
