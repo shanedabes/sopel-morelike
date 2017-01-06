@@ -94,7 +94,8 @@ def morelike(bot, trigger):
         line = db.execute(
             'SELECT value from nicknames '
             'JOIN nick_values ON nicknames.nick_id = nick_values.nick_id '
-            'WHERE key = ? ',
+            'WHERE key = ? '
+            'ORDER BY \'seen_timestamp\'',
             ['seen_message']).fetchone()[0].replace('"', '')
 
     sw, iw = bot.memory['sub_words'], bot.memory['ignored_words']
