@@ -5,17 +5,36 @@ import hyphen
 import re
 import random
 from sopel.module import commands
-
-
-words = ['poo', 'crap', 'shit', 'gay', 'dumb', 'arse', 'fuck', 'piss', 'bum',
-         'tits', 'fart', 'dick', 'cock', 'knob', 'ass']
-words = {i: pronouncing.rhyming_part(pronouncing.phones_for_word(i)[0])
-         for i in words}
+from sopel.config.types import StaticSection, ListAttribute
 
 h_en = hyphen.Hyphenator('en_GB')
 
 
-def trans_word(curr_word):
+class MLSection(StaticSection):
+    sub_words = ListAttribute('sub_words')
+    ignored_words = ListAttribute('ignored_words')
+
+
+def setup(bot):
+    bot.config.define_section('morelike', MLSection)
+
+    def get_phones(x):
+        return pronouncing.rhyming_part(pronouncing.phones_for_word(x)[0])
+    bot.memory['sub_words'] = {i: get_phones(i)
+                               for i in bot.config.morelike.sub_words}
+    bot.memory['ignored_words'] = bot.config.morelike.ignored_words
+
+
+def configure(config):
+    config.define_section('morelike', MLSection, validate=False)
+    config.morelike.configure_setting('sub_words', 'enter words to subsitute')
+    config.morelike.configure_setting('ignored_words', 'enter words to ignore')
+
+
+def trans_word(curr_word, sub_words=[], ignored_words=[]):
+    # return if word is in ignored word lists
+    if curr_word in ignored_words:
+        return curr_word
     # return if more than one word is passed
     if ' ' in curr_word:
         return curr_word
@@ -41,7 +60,8 @@ def trans_word(curr_word):
     if pronouncing.syllable_count(word_phones) != len(word_syllables):
         return curr_word
     # use any of our words that exist in the phoneme for the current word
-    rep_words = [(i, words[i]) for i in words if words[i] in word_phones]
+    rep_words = [(i, sub_words[i]) for i in sub_words
+                 if sub_words[i] in word_phones]
     # if no words match, return the current word
     if not rep_words:
         return curr_word
@@ -54,7 +74,7 @@ def trans_word(curr_word):
     # if our new syllable ends with a vowel, keep the end of the original
     if re.search(r'[aeiouy]$', new_syl):
         new_syl += re.search(r'[^aeiouy]*$',
-                                  word_syllables[syllable_index]).group()
+                             word_syllables[syllable_index]).group()
     # using the found index, replace the old syllable with the new one
     word_syllables[syllable_index] = new_syl
 
@@ -66,13 +86,8 @@ def trans_word(curr_word):
 @commands('morelike')
 def morelike(bot, trigger):
     line = trigger.group(2).strip()
-    new_line = ' '.join(trans_word(i) for i in line.split())
+    sw, iw = bot.memory['sub_words'], bot.memory['ignored_words']
+    print(sw)
+    print(iw)
+    new_line = ' '.join(trans_word(i, sw, iw) for i in line.split())
     bot.say('{}? More like {}'.format(line, new_line))
-
-
-if __name__ == '__main__':
-    line = input('-> ').strip()
-
-    new_line = ' '.join(trans_word(i) for i in line.split())
-
-    print(new_line)
