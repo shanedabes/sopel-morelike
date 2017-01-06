@@ -6,6 +6,7 @@ import re
 import random
 from sopel.module import commands
 from sopel.config.types import StaticSection, ListAttribute
+from sopel.db import SopelDB
 
 h_en = hyphen.Hyphenator('en_GB')
 
@@ -86,7 +87,17 @@ def trans_word(curr_word, sub_words=[], ignored_words=[]):
 
 @commands('morelike')
 def morelike(bot, trigger):
-    line = trigger.group(2).strip()
+    if trigger.group(2):
+        line = trigger.group(2).strip()
+    else:
+        db = SopelDB(bot.config)
+        line = db.execute(
+            'SELECT value from nicknames '
+            'JOIN nick_values ON nicknames.nick_id = nick_values.nick_id '
+            'WHERE key = ? ',
+            ['seen_message']).fetchone()[0].replace('"', '')
+
     sw, iw = bot.memory['sub_words'], bot.memory['ignored_words']
     new_line = ' '.join(trans_word(i, sw, iw) for i in line.split())
+
     bot.say('{}? More like {}'.format(line, new_line))
