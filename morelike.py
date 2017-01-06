@@ -8,7 +8,7 @@ from sopel.module import commands
 from sopel.config.types import StaticSection, ListAttribute
 from sopel.db import SopelDB
 
-h_en = hyphen.Hyphenator('en_GB')
+h_en = hyphen.Hyphenator('en_US')
 
 
 class MLSection(StaticSection):
