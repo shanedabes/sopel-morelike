@@ -18,6 +18,7 @@ class MLSection(StaticSection):
 def setup(bot):
     bot.config.define_section('morelike', MLSection)
 
+    # create a dictionary with words and their rhyming phonemes
     def get_phones(x):
         return pronouncing.rhyming_part(pronouncing.phones_for_word(x)[0])
     bot.memory['sub_words'] = {i: get_phones(i)
