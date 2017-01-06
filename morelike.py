@@ -87,7 +87,5 @@ def trans_word(curr_word, sub_words=[], ignored_words=[]):
 def morelike(bot, trigger):
     line = trigger.group(2).strip()
     sw, iw = bot.memory['sub_words'], bot.memory['ignored_words']
-    print(sw)
-    print(iw)
     new_line = ' '.join(trans_word(i, sw, iw) for i in line.split())
     bot.say('{}? More like {}'.format(line, new_line))
