@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import pronouncing
-import hyphen
+import pyphen
 import re
 import random
 from sopel.module import commands
 from sopel.config.types import StaticSection, ListAttribute
 from sopel.db import SopelDB
 
-h_en = hyphen.Hyphenator('en_US')
+h_en = pyphen.Pyphen(lang='en_US')
 
 
 class MLSection(StaticSection):
@@ -49,16 +49,16 @@ def trans_word(curr_word, sub_words=[], ignored_words=[]):
         return curr_word
     # pick the first pronunciation, it's usually accurate
     word_phones = word_phone_list[0]
-    # if the number of syllables is 1, no need to use hyphen to split
+    # if the number of syllables is 1, no need to use pyphen to split
     if pronouncing.syllable_count(word_phones) == 1:
         word_syllables = [curr_word]
     else:
-        # use hyphen to split the word into syllables
-        word_syllables = h_en.syllables(curr_word)
+        # use pyphen to split the word into syllables
+        word_syllables = h_en.inserted(curr_word).split('-')
         # if the word couldn't be split, return the original word
         if not word_syllables:
             return curr_word
-    # if hyphen's syllable count doesn't match pronouncing's, return the word
+    # if pyphen's syllable count doesn't match pronouncing's, return the word
     if pronouncing.syllable_count(word_phones) != len(word_syllables):
         return curr_word
     # use any of our words that exist in the phoneme for the current word
