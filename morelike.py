@@ -96,7 +96,7 @@ def morelike(bot, trigger):
         query = db.execute(
             'SELECT * from nick_values '
             'WHERE key = "seen_timestamp" '
-            'OR key = "seen_message"'
+            'OR key = "seen_message" '
             'ORDER BY "nick_id", "key"').fetchall()
         messages = [[i[2] for i in sorted(query) if i[0] == j]
                     for j in {k[0] for k in query}]
