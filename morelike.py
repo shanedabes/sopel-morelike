@@ -98,7 +98,8 @@ def morelike(bot, trigger):
             'WHERE key = "seen_timestamp" '
             'OR key = "seen_message"'
             'ORDER BY "nick_id", "key"').fetchall()
-        messages = zip(*[iter(i[2] for i in query)]*2)
+        messages = [[i[2] for i in sorted(query) if i[0] == j]
+                    for j in {k[0] for k in query}]
         line = max(messages, key=lambda x: x[1])[0].replace('"', '')
 
     sw, iw = bot.memory['sub_words'], bot.memory['ignored_words']
