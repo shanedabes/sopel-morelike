@@ -15,6 +15,10 @@ def setup(bot):
     pass
 
 
-@module.commands('helloworld')
+def clean_word(w):
+    return ''.join(i for i in w if i.isalnum())
+
+
+@module.commands('morelike')
 def hello_world(bot, trigger):
     bot.say('Hello, world!')

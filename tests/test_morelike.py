@@ -7,10 +7,9 @@ import unittest
 
 from sopel_modules.morelike import morelike
 
+import pronouncing
+import pyphen
 
-class TestMorelike(unittest.TestCase):
-    def setUp(self):
-        pass
 
-    def testSomething(self):
-        pass
+def test_clean_word():
+    assert morelike.clean_word('#hel_lo+') == 'hello'
