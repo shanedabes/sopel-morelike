@@ -24,3 +24,9 @@ def test_get_pronounciation():
 
 def test_get_no_pronounciation():
     assert morelike.get_pronounciation('aksjga') is None
+
+
+def test_get_syllables():
+    expected = ['to', 'mor', 'row']
+
+    assert morelike.get_syllables('tomorrow') == expected

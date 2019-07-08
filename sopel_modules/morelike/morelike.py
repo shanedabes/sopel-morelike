@@ -7,6 +7,7 @@ from __future__ import (unicode_literals, absolute_import, division,
 from sopel import module
 
 import pronouncing
+import pyphen
 
 
 def configure(config):
@@ -27,6 +28,12 @@ def get_pronounciation(w):
         return phones[0]
     else:
         return None
+
+
+def get_syllables(w):
+    h_en = pyphen.Pyphen(lang='en_US')
+    word_syllables = h_en.inserted(w).split('-')
+    return word_syllables
 
 
 @module.commands('morelike')
