@@ -23,7 +23,8 @@ def test_get_pronounciation():
 
 
 def test_get_no_pronounciation():
-    assert morelike.get_pronounciation('aksjga') is None
+    with pytest.raises(RuntimeError) as e:
+        morelike.get_pronounciation('aksjga')
 
 
 def test_get_syllables():

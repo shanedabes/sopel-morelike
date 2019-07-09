@@ -27,7 +27,7 @@ def get_pronounciation(w):
     if phones:
         return phones[0]
     else:
-        return None
+        raise RuntimeError()
 
 
 def get_syllables(w):

@@ -41,18 +41,14 @@ def trans_word(curr_word, sub_words=[], ignored_words=[]):
     if ' ' in curr_word:
         return curr_word
     # strip non alphanumeric characters from word
-    #  curr_word = ''.join(i for i in curr_word if i.isalnum())
-    word = clean_word(curr_word)
+    curr_word = ''.join(i for i in curr_word if i.isalnum())
     # get the phonemes for the current word
-    #  word_phone_list = pronouncing.phones_for_word(curr_word)
+    word_phone_list = pronouncing.phones_for_word(curr_word)
     # if no phonemes were found return the current word
-    #  if not word_phone_list:
-    #      return curr_word
-    phones = get_pronounciation(word)
-    if phones is None:
+    if not word_phone_list:
         return curr_word
     # pick the first pronunciation, it's usually accurate
-    #  word_phones = word_phone_list[0]
+    word_phones = word_phone_list[0]
     # if the number of syllables is 1, no need to use pyphen to split
     if pronouncing.syllable_count(word_phones) == 1:
         word_syllables = [curr_word]
